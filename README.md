@@ -35,7 +35,7 @@
 1. 克隆仓库：
 
 ```bash
-git clone https://github.com/MrChenLearnSpace/LLMApiServer.git
+git clone https://github.com/your-username/LLMApiServer.git
 cd LLMApiServer
 ```
 
@@ -111,6 +111,8 @@ VALID_API_KEYS = {"aa1234567", "another-valid-key-for-testing"}
 
 ## 📖 使用方法
 
+> **注意**：以下示例中的 `YOUR_API_KEY` 需要替换为您在 `main.py` 中配置的有效 API 密钥（默认值如 `aa1234567`）。
+
 ### Python 示例
 
 #### 基础对话（非流式）
@@ -120,7 +122,7 @@ import requests
 
 url = "http://localhost:8000/v1/chat/completions"
 headers = {
-    "Authorization": "Bearer aa1234567",
+    "Authorization": "Bearer YOUR_API_KEY",
     "Content-Type": "application/json"
 }
 
@@ -145,7 +147,7 @@ import requests
 
 url = "http://localhost:8000/v1/chat/completions"
 headers = {
-    "Authorization": "Bearer aa1234567",
+    "Authorization": "Bearer YOUR_API_KEY",
     "Content-Type": "application/json"
 }
 
@@ -183,7 +185,7 @@ with open("image.jpg", "rb") as f:
 
 url = "http://localhost:8000/v1/chat/completions"
 headers = {
-    "Authorization": "Bearer aa1234567",
+    "Authorization": "Bearer YOUR_API_KEY",
     "Content-Type": "application/json"
 }
 
@@ -215,7 +217,7 @@ print(response.json()["choices"][0]["message"]["content"])
 
 ```bash
 curl -X POST http://localhost:8000/v1/chat/completions \
-  -H "Authorization: Bearer aa1234567" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "default-model",
