@@ -39,6 +39,8 @@ git clone https://github.com/your-username/LLMApiServer.git
 cd LLMApiServer
 ```
 
+> **提示**：将 `your-username` 替换为实际的 GitHub 用户名或组织名。
+
 2. 安装依赖：
 
 ```bash
@@ -111,7 +113,9 @@ VALID_API_KEYS = {"aa1234567", "another-valid-key-for-testing"}
 
 ## 📖 使用方法
 
-> **注意**：以下示例中的 `YOUR_API_KEY` 需要替换为您在 `main.py` 中配置的有效 API 密钥（默认值如 `aa1234567`）。
+> **注意**：以下示例中的 `YOUR_API_KEY` 需要替换为您在 `main.py` 中配置的有效 API 密钥。
+> 
+> **⚠️ 安全警告**：默认 API 密钥（如 `aa1234567`）仅用于测试，生产环境中务必更改为强密码！
 
 ### Python 示例
 
