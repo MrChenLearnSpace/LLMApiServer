@@ -6,10 +6,10 @@ from abc import ABC, abstractmethod
 from typing import AsyncGenerator, Union, List
 
 from llama_cpp import Llama
-from llama_cpp.llama_chat_format import Llava15ChatHandler
+# --- 修改处：不再需要 Llava15ChatHandler ---
+# from llama_cpp.llama_chat_format import Llava15ChatHandler
 from fastapi.responses import StreamingResponse, JSONResponse
 
-# --- 修改这里：从新的 api_models.py 导入 ---
 from api_models import (
     ChatCompletionRequest,
     ChatCompletionResponse,
@@ -23,7 +23,7 @@ from api_models import (
     ImageContentPart
 )
 
-# --- 辅助函数：流式生成器 ---
+# --- 辅助函数：流式生成器 (无需改动) ---
 async def stream_generator(llm_generator, model_name: str, response_id: str) -> AsyncGenerator[str, None]:
     created_time = int(time.time())
     
@@ -46,7 +46,7 @@ async def stream_generator(llm_generator, model_name: str, response_id: str) -> 
 
     yield "data: [DONE]\n\n"
 
-# --- 模型封装 (这部分代码无需改动) ---
+# --- 模型封装 (抽象基类无需改动) ---
 
 class ModelWrapper(ABC):
     """模型封装的抽象基类"""
@@ -113,18 +113,27 @@ class LLMWrapper(ModelWrapper):
 
 class VLWrapper(ModelWrapper):
     """视觉语言模型的封装"""
-    def __init__(self, model_path: str, model_name: str, mmproj_path: str, **kwargs):
-        self.mmproj_path = mmproj_path
+    # --- 修改处：__init__ 方法不再需要 mmproj_path ---
+    def __init__(self, model_path: str, model_name: str, **kwargs):
+        # self.mmproj_path = mmproj_path # <--- 删除处
         super().__init__(model_path, model_name, **kwargs)
 
+    # --- 修改处：_load_model 方法不再使用 Llava15ChatHandler ---
     def _load_model(self, **kwargs) -> Llama:
-        print(f"正在加载 VL 模型及 MMProj 文件 '{self.mmproj_path}'...")
-        if not self.mmproj_path:
-            raise ValueError("VL 模型必须提供 MMProj 文件路径 (MMPROJ_PATH)")
+        print(f"正在加载 VL 模型...")
+        # 新的加载方式依赖 llama-cpp-python 自动处理多模态模型
+        # 它和标准 LLM 的加载方式完全一样
+        return Llama(model_path=self.model_path, **kwargs)
         
-        chat_handler = Llava15ChatHandler(clip_model_path=self.mmproj_path, verbose=False)
-        return Llama(model_path=self.model_path, chat_handler=chat_handler, **kwargs)
+        # --- 以下是旧代码，需要删除 ---
+        # print(f"正在加载 VL 模型及 MMProj 文件 '{self.mmproj_path}'...")
+        # if not self.mmproj_path:
+        #     raise ValueError("VL 模型必须提供 MMProj 文件路径 (MMPROJ_PATH)")
+        # 
+        # chat_handler = Llava15ChatHandler(clip_model_path=self.mmproj_path, verbose=False)
+        # return Llama(model_path=self.model_path, chat_handler=chat_handler, **kwargs)
 
+    # --- _prepare_messages 方法无需改动，它已经能正确处理图片URL ---
     def _prepare_messages(self, messages: List[ChatMessage]) -> List[dict]:
         processed_messages = []
         for msg in messages:
@@ -143,3 +152,4 @@ class VLWrapper(ModelWrapper):
                     })
             processed_messages.append({"role": msg.role, "content": content_parts})
         return processed_messages
+

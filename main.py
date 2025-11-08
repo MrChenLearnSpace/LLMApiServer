@@ -1,5 +1,3 @@
-# main.py
-
 import os
 from contextlib import asynccontextmanager
 from typing import Union
@@ -14,9 +12,10 @@ from model_wrapper import LLMWrapper, VLWrapper
 from api_models import ChatCompletionRequest
 
 # --- 1. 配置 (Configuration) ---
-MODEL_TYPE = os.getenv("MODEL_TYPE", "VL").upper()
-MODEL_PATH = os.getenv("MODEL_PATH", "./Qwen3-VL-4B-Instruct-UD-IQ1_M.gguf")
-MMPROJ_PATH = os.getenv("MMPROJ_PATH","./mmproj-BF16.gguf")
+MODEL_TYPE = os.getenv("MODEL_TYPE", "VL").upper() # 支持 "LLM" 或 "VL"
+MODEL_PATH = os.getenv("MODEL_PATH", "./Qwen3-VL-30B-A3B-Instruct-UD-Q4_K_XL.gguf")
+# --- 删除处：不再需要 MMPROJ_PATH ---
+# MMPROJ_PATH = os.getenv("MMPROJ_PATH","./mmproj-F16-Qwen2.5-7b.gguf")
 MODEL_NAME = os.getenv("MODEL_NAME", "default-model")
 VALID_API_KEYS = {"aa1234567", "another-valid-key-for-testing"}
 
@@ -30,16 +29,19 @@ async def lifespan(app: FastAPI):
     model_kwargs = {
         "n_ctx": 8192,
         "n_gpu_layers": -1,
-        "verbose": False
+        "verbose": True
     }
 
     if MODEL_TYPE == "VL":
-        if not MMPROJ_PATH:
-            raise ValueError("错误: MODEL_TYPE 设置为 'VL' 但未提供 MMPROJ_PATH 环境变量。")
+        # --- 删除处：移除对 MMPROJ_PATH 的检查 ---
+        # if not MMPROJ_PATH:
+        #     raise ValueError("错误: MODEL_TYPE 设置为 'VL' 但未提供 MMPROJ_PATH 环境变量。")
+        
+        # --- 修改处：实例化 VLWrapper 时不再传递 mmproj_path ---
         wrapper = VLWrapper(
             model_path=MODEL_PATH,
             model_name=MODEL_NAME,
-            mmproj_path=MMPROJ_PATH,
+            # mmproj_path=MMPROJ_PATH, # <--- 删除这一行
             **model_kwargs
         )
     elif MODEL_TYPE == "LLM":
@@ -57,7 +59,7 @@ async def lifespan(app: FastAPI):
     model_container.clear()
     print("模型已卸载，服务器关闭。")
 
-# --- 3. 安全与认证 (Security & Authentication) ---
+# --- 3. 安全与认证 (Security & Authentication) (无需改动) ---
 auth_scheme = HTTPBearer()
 def validate_api_key(credentials: HTTPAuthorizationCredentials = Depends(auth_scheme)):
     if credentials.scheme != "Bearer" or credentials.credentials not in VALID_API_KEYS:
@@ -68,7 +70,7 @@ def validate_api_key(credentials: HTTPAuthorizationCredentials = Depends(auth_sc
         )
     return credentials.credentials
 
-# --- 4. FastAPI 应用实例与 API 路由 ---
+# --- 4. FastAPI 应用实例与 API 路由 (无需改动) ---
 app = FastAPI(lifespan=lifespan)
 
 @app.post(
@@ -93,4 +95,4 @@ async def create_chat_completion(request: ChatCompletionRequest) -> Union[JSONRe
         raise HTTPException(status_code=500, detail=f"服务器内部错误: {str(e)}")
 
 # --- 运行服务器的命令 ---
-# uvicorn main:app --host 0.0.0.0 --port 8000
+# uvicorn main:app --host 0.0.0.0 --port 10505
