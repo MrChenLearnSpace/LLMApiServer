@@ -13,7 +13,7 @@ from api_models import ChatCompletionRequest
 
 # --- 1. 配置 (Configuration) ---
 MODEL_TYPE = os.getenv("MODEL_TYPE", "VL").upper() # 支持 "LLM" 或 "VL"
-MODEL_PATH = os.getenv("MODEL_PATH", "./Qwen3-VL-30B-A3B-Instruct-UD-Q4_K_XL.gguf")
+MODEL_PATH = os.getenv("MODEL_PATH", "./Qwen2.5-VL-7B-Instruct-UD-Q8_K_XL.gguf")
 # --- 删除处：不再需要 MMPROJ_PATH ---
 # MMPROJ_PATH = os.getenv("MMPROJ_PATH","./mmproj-F16-Qwen2.5-7b.gguf")
 MODEL_NAME = os.getenv("MODEL_NAME", "default-model")

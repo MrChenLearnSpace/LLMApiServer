@@ -26,7 +26,7 @@
 
 ### 环境要求
 
-- Python 3.8+
+- Python 3.10.6+
 - CUDA（可选，用于 GPU 加速）
 - 足够的内存和存储空间用于加载模型
 
@@ -35,11 +35,11 @@
 1. 克隆仓库：
 
 ```bash
-git clone https://github.com/your-username/LLMApiServer.git
+git clone https://github.com/MrChenLearnSpace/LLMApiServer.git
 cd LLMApiServer
 ```
 
-> **提示**：将 `your-username` 替换为实际的 GitHub 用户名或组织名。
+> **提示**：将 `MrChenLearnSpace` 替换为实际的 GitHub 用户名或组织名。
 
 2. 安装依赖：
 
